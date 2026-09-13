@@ -90,32 +90,6 @@ function CloseIcon() {
   );
 }
 
-/* ── بنر بالای صفحه ─────────────────────────────────────────────────────── */
-
-function CartBanner() {
-  return (
-    <div
-      className="cart-banner"
-      style={{ backgroundImage: `url(${encodeURI('/banner-cart.svg')})` }}
-    >
-      <div className="cart-banner__content">
-        <span className="cart-banner__icon" aria-hidden="true">
-          <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 8h5l6.5 24h22l5-16H15" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="22" cy="40" r="2.5" stroke="currentColor" strokeWidth="2.5"/>
-            <circle cx="36" cy="40" r="2.5" stroke="currentColor" strokeWidth="2.5"/>
-          </svg>
-        </span>
-        <h1 className="cart-banner__title">سبد خرید</h1>
-        <p className="cart-banner__subtitle">محصولات منتخب شما در سبد خرید...</p>
-      </div>
-    </div>
-  );
-}
-
-
-
-
 
 /* ── کنترل تعداد ────────────────────────────────────────────────────────── */
 
@@ -176,11 +150,44 @@ function ItemPrice({ item }) {
   );
 }
 
-/* ── یک ردیف محصول ──────────────────────────────────────────────────────── */
+/* ── آیکون قلب (wishlist) ────────────────────────────────────────────────── */
+function HeartIcon() {
+  return (
+    <svg
+      width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  );
+}
 
+/* ── یک ردیف محصول ──────────────────────────────────────────────────────── */
 function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   return (
     <article className="cart-item">
+
+      {/* ستون آیکون‌ها — راست‌ترین بخش در RTL */}
+      <div className="cart-item__actions">
+        <button
+          type="button"
+          className="cart-item__action-btn"
+          aria-label={`افزودن ${item.name} به علاقه‌مندی‌ها`}
+        >
+          <HeartIcon />
+        </button>
+        <button
+          type="button"
+          className="cart-item__action-btn cart-item__action-btn--remove"
+          onClick={() => onRemove(item.id)}
+          aria-label={`حذف ${item.name} از سبد خرید`}
+        >
+          <TrashIcon />
+        </button>
+      </div>
+
+      {/* تصویر محصول */}
       <div className="cart-item__media">
         <img
           src={encodeURI(item.image)}
@@ -189,36 +196,23 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
         />
       </div>
 
+      {/* مشخصات — مرکز */}
       <div className="cart-item__body">
-        {item.brand && <p className="cart-item__brand">{item.brand}</p>}
         <h3 className="cart-item__name">{item.name}</h3>
 
-        {item.tags?.length > 0 && (
-          <ul className="cart-item__tags" aria-label="ویژگی‌های محصول">
-            {item.tags.map((tag) => (
-              <li key={tag}>{tag}</li>
-            ))}
-          </ul>
-        )}
 
-        <div className="cart-item__foot">
-          <QuantityControl
-            item={item}
-            onIncrease={onIncrease}
-            onDecrease={onDecrease}
-          />
-          <ItemPrice item={item} />
-        </div>
       </div>
 
-      <button
-        type="button"
-        className="cart-item__remove"
-        onClick={() => onRemove(item.id)}
-        aria-label={`حذف ${item.name} از سبد خرید`}
-      >
-        <CloseIcon />
-      </button>
+      {/* قیمت + تعداد — چپ‌ترین بخش در RTL */}
+      <div className="cart-item__price-section">
+        <ItemPrice item={item} />
+        <QuantityControl
+          item={item}
+          onIncrease={onIncrease}
+          onDecrease={onDecrease}
+        />
+      </div>
+
     </article>
   );
 }
@@ -479,7 +473,6 @@ export default function Cart() {
   /* ── رندر ── */
   return (
     <div className="cart-page" dir="rtl">
-      <CartBanner />
 
       <div className="cart-page__inner">
         {items.length === 0 ? (
