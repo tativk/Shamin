@@ -20,26 +20,11 @@ const Login = () => {
 
   return (
     <div className="auth-page" dir="rtl">
-      <div className="auth-page__visual">
-        <div className="auth-page__visual-overlay" />
-        <img
-          className="auth-page__visual-image"
-          src="/back-login.png"
-          alt="شمین گالری"
-        />
-        <div className="auth-page__brand">
-          <span className="auth-page__brand-divider" />
-          <p className="auth-page__brand-tagline">زیبایی در جزئیات است...</p>
-        </div>
-        <span className="auth-page__deco auth-page__deco--top" aria-hidden="true" />
-        <span className="auth-page__deco auth-page__deco--bottom" aria-hidden="true" />
-      </div>
-
       <div className="auth-page__form-side">
         <div className="auth-form-wrap">
-          <img className="auth-card__logo" src="/logo.png" alt="لوگوی شمین گالری" />
-
           <div className="auth-card">
+            <img className="auth-card__logo" src="/logo.png" alt="لوگوی شمین گالری" />
+
             <h2 className="auth-card__title">ورود به شمین گالری</h2>
             <p className="auth-card__subtitle">
               برای دسترسی به حساب کاربری خود، اطلاعات زیر را وارد کنید.
