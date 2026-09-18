@@ -1,215 +1,286 @@
 import React,{useEffect,useMemo,useState}from"react";
-import{FiPlus,FiSearch,FiFilter,FiChevronDown,FiChevronLeft,FiChevronRight,FiCalendar,FiUsers,FiDatabase,FiCheckCircle,FiTruck,FiClock,FiXCircle,FiEye,FiMoreHorizontal,FiCopy,FiPackage,FiRefreshCw,FiShoppingBag}from"react-icons/fi";
+import{FiPlus,FiSearch,FiFilter,FiChevronDown,FiChevronLeft,FiChevronRight,FiCalendar,FiUsers,FiDatabase,FiCheckCircle,FiTruck,FiClock,FiXCircle,FiEye,FiMoreHorizontal,FiCopy,FiPackage,FiRefreshCw,FiShoppingBag,FiX,FiMapPin,FiPhone,FiCreditCard,FiUser,FiArrowRight,FiHash,FiCheck,FiEdit3}from"react-icons/fi";
 import"./Orders.css";
 
-const shaminOrdersData=[
-{id:"SH-1048",customer:"سارا محمدی",customerType:"مشتری عادی",products:[{name:"Chanel Coco Mademoiselle",type:"عطر زنانه"},{name:"Dior Sauvage",type:"عطر مردانه"}],productCount:2,amount:4850000,status:"completed",statusLabel:"تکمیل شده",time:"۱۲ دقیقه پیش",date:"امروز"},
-{id:"SH-1047",customer:"علی رضایی",customerType:"مشتری عادی",products:[{name:"Dior Sauvage",type:"عطر مردانه"}],productCount:1,amount:5250000,status:"shipping",statusLabel:"در حال ارسال",time:"۳۵ دقیقه پیش",date:"امروز"},
-{id:"SH-1046",customer:"نگار احمدی",customerType:"مشتری عادی",products:[{name:"YSL Libre",type:"عطر زنانه"},{name:"Chanel Chance",type:"عطر زنانه"},{name:"Versace Bright Crystal",type:"عطر زنانه"}],productCount:3,amount:4600000,status:"pending",statusLabel:"در انتظار",time:"۵۲ دقیقه پیش",date:"امروز"},
-{id:"SH-1045",customer:"محمد کریمی",customerType:"مشتری ویژه",products:[{name:"Tom Ford Oud Wood",type:"عطر مردانه"}],productCount:1,amount:7900000,status:"completed",statusLabel:"تکمیل شده",time:"۱ ساعت پیش",date:"امروز"},
-{id:"SH-1044",customer:"فاطمه حسینی",customerType:"مشتری عادی",products:[{name:"Black Opium",type:"عطر زنانه"},{name:"J'adore",type:"عطر زنانه"}],productCount:2,amount:3250000,status:"cancelled",statusLabel:"لغو شده",time:"۲ ساعت پیش",date:"امروز"},
-{id:"SH-1043",customer:"رضا صادقی",customerType:"مشتری عادی",products:[{name:"Bleu de Chanel",type:"عطر مردانه"},{name:"Acqua di Gio",type:"عطر مردانه"}],productCount:2,amount:6200000,status:"completed",statusLabel:"تکمیل شده",time:"۳ ساعت پیش",date:"امروز"},
-{id:"SH-1042",customer:"مریم اکبری",customerType:"مشتری عادی",products:[{name:"YSL Libre",type:"عطر زنانه"}],productCount:1,amount:3850000,status:"shipping",statusLabel:"در حال ارسال",time:"۵ ساعت پیش",date:"امروز"},
-{id:"SH-1041",customer:"امیر نادری",customerType:"مشتری ویژه",products:[{name:"Tom Ford Noir",type:"عطر مردانه"},{name:"Dior Homme",type:"عطر مردانه"}],productCount:2,amount:7400000,status:"pending",statusLabel:"در انتظار",time:"۶ ساعت پیش",date:"امروز"},
-{id:"SH-1040",customer:"الهام مرادی",customerType:"مشتری عادی",products:[{name:"Chanel Coco Mademoiselle",type:"عطر زنانه"}],productCount:1,amount:2450000,status:"completed",statusLabel:"تکمیل شده",time:"۸ ساعت پیش",date:"دیروز"},
-{id:"SH-1039",customer:"حسین موسوی",customerType:"مشتری عادی",products:[{name:"Dior Sauvage",type:"عطر مردانه"}],productCount:1,amount:5200000,status:"shipping",statusLabel:"در حال ارسال",time:"دیروز",date:"دیروز"}
+const nd=v=>v.replace(/[۰-۹]/g,c=>"۰۱۲۳۴۵۶۷۸۹".indexOf(c)).replace(/[٠-٩]/g,c=>"٠١٢٣٤٥٦٧٨٩".indexOf(c)).replace(/[^\d]/g,"");
+const nt=v=>v.replace(/ي/g,"ی").replace(/ى/g,"ی").replace(/ك/g,"ک").replace(/\u200c/g," ").replace(/\s+/g," ").trim().toLowerCase();
+const gi=n=>{const p=n.trim().split(/\s+/);return p.length>=2?`${p[0][0]}${p[1][0]}`:p[0]?.[0]||"م";};
+const fp=p=>Number(p||0).toLocaleString("fa-IR");
+
+const SC={completed:{label:"تکمیل شده",icon:FiCheckCircle},shipping:{label:"در حال ارسال",icon:FiTruck},pending:{label:"در انتظار",icon:FiClock},cancelled:{label:"لغو شده",icon:FiXCircle}};
+
+const IMG=[
+"https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=240&q=85",
+"https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=240&q=85",
+"https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=240&q=85"
 ];
 
-const shaminStatusConfig={completed:{label:"تکمیل شده",icon:FiCheckCircle},shipping:{label:"در حال ارسال",icon:FiTruck},pending:{label:"در انتظار",icon:FiClock},cancelled:{label:"لغو شده",icon:FiXCircle}};
-
-const shaminProductImages=[
-"https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=120&q=80",
-"https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=120&q=80",
-"https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=120&q=80"
+const INIT=[
+{id:"SH-1048",customer:"سارا محمدی",customerType:"مشتری عادی",phone:"۰۹۱۲۱۲۳۴۵۶۷",address:"تهران، خیابان ولیعصر",payment:"پرداخت آنلاین",products:[{name:"Chanel Coco Mademoiselle",type:"عطر زنانه",quantity:1,price:2850000},{name:"Dior Sauvage",type:"عطر مردانه",quantity:1,price:2000000}],productCount:2,amount:4850000,status:"completed",statusLabel:"تکمیل شده",time:"۱۲ دقیقه پیش",date:"امروز"},
+{id:"SH-1047",customer:"علی رضایی",customerType:"مشتری عادی",phone:"۰۹۱۲۸۷۶۵۴۳۲",address:"تهران، سعادت‌آباد",payment:"پرداخت آنلاین",products:[{name:"Dior Sauvage",type:"عطر مردانه",quantity:1,price:5250000}],productCount:1,amount:5250000,status:"shipping",statusLabel:"در حال ارسال",time:"۳۵ دقیقه پیش",date:"امروز"},
+{id:"SH-1046",customer:"نگار احمدی",customerType:"مشتری عادی",phone:"۰۹۳۵۱۲۳۴۵۶۷",address:"اصفهان، خیابان چهارباغ",payment:"در انتظار پرداخت",products:[{name:"YSL Libre",type:"عطر زنانه",quantity:1,price:1850000},{name:"Chanel Chance",type:"عطر زنانه",quantity:1,price:1500000},{name:"Versace Bright Crystal",type:"عطر زنانه",quantity:1,price:1250000}],productCount:3,amount:4600000,status:"pending",statusLabel:"در انتظار",time:"۵۲ دقیقه پیش",date:"امروز"},
+{id:"SH-1045",customer:"محمد کریمی",customerType:"مشتری ویژه",phone:"۰۹۱۹۸۷۶۵۴۳۲",address:"تهران، نیاوران",payment:"پرداخت آنلاین",products:[{name:"Tom Ford Oud Wood",type:"عطر مردانه",quantity:1,price:7900000}],productCount:1,amount:7900000,status:"completed",statusLabel:"تکمیل شده",time:"۱ ساعت پیش",date:"امروز"},
+{id:"SH-1044",customer:"فاطمه حسینی",customerType:"مشتری عادی",phone:"۰۹۱۱۶۵۴۳۲۱۰",address:"کرج، عظیمیه",payment:"پرداخت آنلاین",products:[{name:"Black Opium",type:"عطر زنانه",quantity:1,price:1850000},{name:"J'adore",type:"عطر زنانه",quantity:1,price:1400000}],productCount:2,amount:3250000,status:"cancelled",statusLabel:"لغو شده",time:"۲ ساعت پیش",date:"امروز"},
+{id:"SH-1043",customer:"رضا صادقی",customerType:"مشتری عادی",phone:"۰۹۱۴۳۲۱۰۹۸۷",address:"تبریز، ولیعصر",payment:"پرداخت آنلاین",products:[{name:"Bleu de Chanel",type:"عطر مردانه",quantity:1,price:3200000},{name:"Acqua di Gio",type:"عطر مردانه",quantity:1,price:3000000}],productCount:2,amount:6200000,status:"completed",statusLabel:"تکمیل شده",time:"۳ ساعت پیش",date:"امروز"},
+{id:"SH-1042",customer:"مریم اکبری",customerType:"مشتری عادی",phone:"۰۹۳۶۵۴۳۲۱۰۹",address:"شیراز، معالی‌آباد",payment:"پرداخت آنلاین",products:[{name:"YSL Libre",type:"عطر زنانه",quantity:1,price:3850000}],productCount:1,amount:3850000,status:"shipping",statusLabel:"در حال ارسال",time:"۵ ساعت پیش",date:"امروز"},
+{id:"SH-1041",customer:"امیر نادری",customerType:"مشتری ویژه",phone:"۰۹۱۲۷۶۵۴۳۲۱",address:"تهران، فرمانیه",payment:"در انتظار پرداخت",products:[{name:"Tom Ford Noir",type:"عطر مردانه",quantity:1,price:3800000},{name:"Dior Homme",type:"عطر مردانه",quantity:1,price:3600000}],productCount:2,amount:7400000,status:"pending",statusLabel:"در انتظار",time:"۶ ساعت پیش",date:"امروز"},
+{id:"SH-1040",customer:"الهام مرادی",customerType:"مشتری عادی",phone:"۰۹۳۸۷۶۵۴۳۲۱",address:"قم، بلوار امین",payment:"پرداخت آنلاین",products:[{name:"Chanel Coco Mademoiselle",type:"عطر زنانه",quantity:1,price:2450000}],productCount:1,amount:2450000,status:"completed",statusLabel:"تکمیل شده",time:"۸ ساعت پیش",date:"دیروز"},
+{id:"SH-1039",customer:"حسین موسوی",customerType:"مشتری عادی",phone:"۰۹۱۵۴۳۲۱۰۹۸",address:"مشهد، احمدآباد",payment:"پرداخت آنلاین",products:[{name:"Dior Sauvage",type:"عطر مردانه",quantity:1,price:5200000}],productCount:1,amount:5200000,status:"shipping",statusLabel:"در حال ارسال",time:"دیروز",date:"دیروز"}
 ];
 
 function Orders(){
-const[shaminSearch,setShaminSearch]=useState("");
-const[shaminStatusFilter,setShaminStatusFilter]=useState("all");
-const[shaminCustomerFilter,setShaminCustomerFilter]=useState("all");
-const[shaminDateFilter,setShaminDateFilter]=useState("all");
-const[shaminSort,setShaminSort]=useState("newest");
-const[shaminPage,setShaminPage]=useState(1);
-const[shaminRowsPerPage,setShaminRowsPerPage]=useState(6);
-const[shaminOpenOrderMenu,setShaminOpenOrderMenu]=useState(null);
-const[shaminCopiedOrder,setShaminCopiedOrder]=useState(null);
-const[shaminMobileFilters,setShaminMobileFilters]=useState(false);
-const[shaminPriceMin,setShaminPriceMin]=useState("");
-const[shaminPriceMax,setShaminPriceMax]=useState("");
-const shaminFormatPrice=price=>price.toLocaleString("fa-IR");
+const[rows,setRows]=useState(INIT);
+const[q,setQ]=useState("");
+const[fst,setFst]=useState("all");
+const[fcu,setFcu]=useState("all");
+const[fpy,setFpy]=useState("all");
+const[fdt,setFdt]=useState("all");
+const[srt,setSrt]=useState("newest");
+const[pg,setPg]=useState(1);
+const[rpp,setRpp]=useState(6);
+const[om,setOm]=useState(null);
+const[cp,setCp]=useState(null);
+const[mf,setMf]=useState(false);
+const[pmin,setPmin]=useState("");
+const[pmax,setPmax]=useState("");
+const[sel,setSel]=useState(null);
+const[dop,setDop]=useState(false);
+const[ed,setEd]=useState(false);
+const[ec,setEc]=useState("");
+const[ep,setEp]=useState("");
+const[ea,setEa]=useState("");
+const[ect,setEct]=useState("مشتری عادی");
+const[epy,setEpy]=useState("پرداخت آنلاین");
+const[es,setEs]=useState("pending");
+const[epr,setEpr]=useState([]);
+const[nop,setNop]=useState(false);
+const[nc,setNc]=useState("");
+const[np,setNp]=useState("");
+const[nct,setNct]=useState("مشتری عادی");
+const[nad,setNad]=useState("");
+const[npy,setNpy]=useState("پرداخت آنلاین");
+const[npr,setNpr]=useState("");
+const[nq,setNq]=useState("1");
+const[na,setNa]=useState("");
 
-const shaminStats=useMemo(()=>{
-const total=shaminOrdersData.length;
-const completed=shaminOrdersData.filter(o=>o.status==="completed").length;
-const shipping=shaminOrdersData.filter(o=>o.status==="shipping").length;
-const pending=shaminOrdersData.filter(o=>o.status==="pending").length;
-const cancelled=shaminOrdersData.filter(o=>o.status==="cancelled").length;
-return{total,completed,shipping,pending,cancelled};
-},[]);
+const stats=useMemo(()=>{
+const t=rows.length;
+const c=rows.filter(o=>o.status==="completed").length;
+const s=rows.filter(o=>o.status==="shipping").length;
+const p=rows.filter(o=>o.status==="pending").length;
+const x=rows.filter(o=>o.status==="cancelled").length;
+return{total:t,completed:c,shipping:s,pending:p,cancelled:x};
+},[rows]);
 
-const shaminFilteredOrders=useMemo(()=>{
-const search=shaminSearch.trim().toLowerCase();
-let result=shaminOrdersData.filter(order=>{
-const matchesSearch=!search||order.id.toLowerCase().includes(search)||order.customer.toLowerCase().includes(search)||order.products.some(p=>p.name.toLowerCase().includes(search));
-const matchesStatus=shaminStatusFilter==="all"||order.status===shaminStatusFilter;
-const matchesCustomer=shaminCustomerFilter==="all"||(shaminCustomerFilter==="vip"&&order.customerType==="مشتری ویژه")||(shaminCustomerFilter==="normal"&&order.customerType==="مشتری عادی");
-const matchesDate=shaminDateFilter==="all"||(shaminDateFilter==="today"&&order.date==="امروز")||(shaminDateFilter==="yesterday"&&order.date==="دیروز");
-const numericMin=Number(shaminPriceMin.replace(/[^\d]/g,""))||0;
-const numericMax=Number(shaminPriceMax.replace(/[^\d]/g,""))||Infinity;
-const matchesPrice=order.amount>=numericMin&&order.amount<=numericMax;
-return matchesSearch&&matchesStatus&&matchesCustomer&&matchesDate&&matchesPrice;
+const flt=useMemo(()=>{
+const s=nt(q);
+let r=rows.filter(o=>{
+const ms=!s||nt(o.id).includes(s)||nt(o.customer).includes(s)||nd(o.phone).includes(nd(s))||o.products.some(p=>nt(p.name).includes(s));
+const mst=fst==="all"||o.status===fst;
+const mc=fcu==="all"||(fcu==="vip"&&o.customerType==="مشتری ویژه")||(fcu==="normal"&&o.customerType==="مشتری عادی");
+const mp=fpy==="all"||(fpy==="online"&&o.payment==="پرداخت آنلاین")||(fpy==="cod"&&o.payment==="پرداخت در محل");
+const md=fdt==="all"||(fdt==="today"&&o.date==="امروز")||(fdt==="yesterday"&&o.date==="دیروز");
+const mn=Number(pmin)||0;
+const mx=Number(pmax)||Infinity;
+return ms&&mst&&mc&&mp&&md&&o.amount>=mn&&o.amount<=mx;
 });
-if(shaminSort==="oldest"){result=[...result].reverse();}
-if(shaminSort==="amount-high"){result=[...result].sort((a,b)=>b.amount-a.amount);}
-if(shaminSort==="amount-low"){result=[...result].sort((a,b)=>a.amount-b.amount);}
-return result;
-},[shaminSearch,shaminStatusFilter,shaminCustomerFilter,shaminDateFilter,shaminSort,shaminPriceMin,shaminPriceMax]);
+if(srt==="oldest")r=[...r].reverse();
+if(srt==="amount-high")r=[...r].sort((a,b)=>b.amount-a.amount);
+if(srt==="amount-low")r=[...r].sort((a,b)=>a.amount-b.amount);
+return r;
+},[rows,q,fst,fcu,fpy,fdt,srt,pmin,pmax]);
 
-const shaminTotalPages=Math.max(1,Math.ceil(shaminFilteredOrders.length/shaminRowsPerPage));
-const shaminCurrentOrders=shaminFilteredOrders.slice((shaminPage-1)*shaminRowsPerPage,shaminPage*shaminRowsPerPage);
-const shaminChangeFilter=(setter,value)=>{setter(value);setShaminPage(1);};
-const shaminResetFilters=()=>{setShaminSearch("");setShaminStatusFilter("all");setShaminCustomerFilter("all");setShaminDateFilter("all");setShaminSort("newest");setShaminPriceMin("");setShaminPriceMax("");setShaminPage(1);};
-const shaminCopyOrder=async orderId=>{try{await navigator.clipboard.writeText(`#${orderId}`);setShaminCopiedOrder(orderId);setTimeout(()=>{setShaminCopiedOrder(null);},1400);}catch{setShaminCopiedOrder(orderId);setTimeout(()=>{setShaminCopiedOrder(null);},1400);}};
-const shaminGoToPage=page=>{if(page<1||page>shaminTotalPages)return;setShaminPage(page);};
-const shaminVisiblePages=Array.from({length:shaminTotalPages},(_,index)=>index+1).slice(0,5);
+const tp=Math.max(1,Math.ceil(flt.length/rpp));
+const cur=flt.slice((pg-1)*rpp,pg*rpp);
+
+const vp=useMemo(()=>{
+if(tp<=5)return Array.from({length:tp},(_,i)=>i+1);
+let st=Math.max(1,pg-2);
+let en=Math.min(tp,st+4);
+if(en-st<4)st=Math.max(1,en-4);
+return Array.from({length:en-st+1},(_,i)=>st+i);
+},[tp,pg]);
+
+const chf=(set,v)=>{set(v);setPg(1);};
+const rst=()=>{setQ("");setFst("all");setFcu("all");setFpy("all");setFdt("all");setSrt("newest");setPmin("");setPmax("");setPg(1);};
+const cop=async id=>{try{await navigator.clipboard.writeText(`#${id}`);}catch{}setCp(id);setTimeout(()=>setCp(null),1400);};
+const opd=o=>{setSel(o);setDop(true);setOm(null);};
+const cld=()=>{setDop(false);setTimeout(()=>setSel(null),250);};
+const gtp=p=>{if(p<1||p>tp)return;setPg(p);};
+
+const oed=o=>{
+setSel(o);
+setEc(o.customer);
+setEp(o.phone);
+setEa(o.address);
+setEct(o.customerType);
+setEpy(o.payment);
+setEs(o.status);
+setEpr(o.products.map(p=>({...p})));
+setEd(true);
+setOm(null);
+};
+
+const sed=()=>{
+if(!sel)return;
+const ps=epr.filter(p=>p.name.trim()&&Number(p.price)>0).map(p=>({...p,name:p.name.trim(),price:Number(p.price),quantity:Math.max(1,Number(p.quantity)||1)}));
+if(!ec.trim()||!ps.length)return;
+const amount=ps.reduce((s,p)=>s+(Number(p.price)*Number(p.quantity)),0);
+const upd={...sel,customer:ec.trim(),phone:ep.trim()||"ثبت نشده",address:ea.trim()||"آدرس ثبت نشده",customerType:ect,payment:epy,status:es,statusLabel:SC[es].label,products:ps,productCount:ps.reduce((s,p)=>s+Number(p.quantity),0),amount};
+setRows(p=>p.map(o=>o.id===sel.id?upd:o));
+setSel(upd);
+setEd(false);
+};
+
+const aep=()=>setEpr(p=>[...p,{name:"",type:"محصول",quantity:1,price:0}]);
+const dep=i=>setEpr(p=>p.filter((_,x)=>x!==i));
+const uep=(i,k,v)=>setEpr(p=>p.map((x,idx)=>idx!==i?x:{...x,[k]:k==="quantity"||k==="price"?Number(nd(String(v))):v}));
+
+const hsc=nx=>{
+if(nx==="cancelled"&&sel.status!=="cancelled"){
+const ok=window.confirm("آیا مطمئن هستید که می‌خواهید این سفارش لغو شود؟");
+if(!ok)return;
+}
+setRows(p=>p.map(o=>o.id===sel.id?{...o,status:nx,statusLabel:SC[nx].label}:o));
+setSel(p=>p?{...p,status:nx,statusLabel:SC[nx].label}:p);
+};
+
+const hno=e=>{
+e.preventDefault();
+if(!nc.trim()||!npr.trim()||!Number(na))return;
+const n=Math.max(...rows.map(o=>Number(o.id.replace(/\D/g,""))))+1;
+const qty=Math.max(1,Number(nq)||1);
+const price=Number(na);
+const no={id:`SH-${n}`,customer:nc.trim(),customerType:nct,phone:np.trim()||"ثبت نشده",address:nad.trim()||"آدرس ثبت نشده",payment:npy,products:[{name:npr.trim(),type:"محصول",quantity:qty,price}],productCount:qty,amount:price*qty,status:"pending",statusLabel:"در انتظار",time:"همین الان",date:"امروز"};
+setRows(p=>[no,...p]);
+setNc("");setNp("");setNpr("");setNa("");setNct("مشتری عادی");setNad("");setNpy("پرداخت آنلاین");setNq("1");setNop(false);setPg(1);
+};
 
 useEffect(()=>{
-const handleOutsideClick=event=>{
-if(!event.target.closest(".shamin-orders__more")){
-setShaminOpenOrderMenu(null);
+const oc=e=>{if(!e.target.closest(".so-mr"))setOm(null);};
+const ek=e=>{
+if(e.key==="Escape"){
+setOm(null);setMf(false);
+if(dop)cld();
+if(ed)setEd(false);
+if(nop)setNop(false);
 }
 };
-document.addEventListener("mousedown",handleOutsideClick);
-return()=>{
-document.removeEventListener("mousedown",handleOutsideClick);
-};
-},[]);
+document.addEventListener("mousedown",oc);
+document.addEventListener("keydown",ek);
+return()=>{document.removeEventListener("mousedown",oc);document.removeEventListener("keydown",ek);};
+},[dop,ed,nop]);
+
+const stepMap={pending:1,shipping:3,completed:4,cancelled:0};
+const step=sel?stepMap[sel.status]:0;
 
 return(
-<section className="shamin-orders" dir="rtl">
-<div className="shamin-orders__page-head">
-<div className="shamin-orders__page-title">
-<div className="shamin-orders__title-kicker">
-<span className="shamin-orders__title-dot"></span>
-مدیریت فروشگاه
-</div>
+<section className="so" dir="rtl">
+<div className="so-ph">
+<div className="so-pt">
+<div className="so-tk"><span className="so-td"/>مدیریت فروشگاه</div>
 <h1>سفارش‌ها</h1>
 <p>مدیریت، پیگیری و بررسی سفارش‌های ثبت‌شده در فروشگاه</p>
 </div>
-<div className="shamin-orders__head-actions">
-<button type="button" className="shamin-orders__new-order"><FiPlus/><span>سفارش جدید</span></button>
+<div className="so-ha">
+<button type="button" className="so-nb" onClick={()=>setNop(true)}><FiPlus/><span>سفارش جدید</span></button>
 </div>
 </div>
 
-<div className="shamin-orders__stats">
-<div className="shamin-orders__stat-card shamin-orders__stat-card--cancelled">
-<div className="shamin-orders__stat-icon"><FiXCircle/></div>
-<div className="shamin-orders__stat-content"><span>لغو شده</span><strong>{shaminStats.cancelled.toLocaleString("fa-IR")}</strong><small>سفارش</small></div>
-</div>
-<div className="shamin-orders__stat-card shamin-orders__stat-card--completed">
-<div className="shamin-orders__stat-icon"><FiCheckCircle/></div>
-<div className="shamin-orders__stat-content"><span>تکمیل شده</span><strong>{shaminStats.completed.toLocaleString("fa-IR")}</strong><small>سفارش</small></div>
-</div>
-<div className="shamin-orders__stat-card shamin-orders__stat-card--shipping">
-<div className="shamin-orders__stat-icon"><FiTruck/></div>
-<div className="shamin-orders__stat-content"><span>در حال ارسال</span><strong>{shaminStats.shipping.toLocaleString("fa-IR")}</strong><small>سفارش</small></div>
-</div>
-<div className="shamin-orders__stat-card shamin-orders__stat-card--pending">
-<div className="shamin-orders__stat-icon"><FiClock/></div>
-<div className="shamin-orders__stat-content"><span>در انتظار پرداخت</span><strong>{shaminStats.pending.toLocaleString("fa-IR")}</strong><small>سفارش</small></div>
-</div>
+<div className="so-st">
+<div className="so-sc so-sct"><div className="so-si"><FiShoppingBag/></div><div className="so-sn"><span>کل سفارش‌ها</span><strong>{stats.total.toLocaleString("fa-IR")}</strong><small>سفارش ثبت‌شده</small></div></div>
+<div className="so-sc so-scc"><div className="so-si"><FiCheckCircle/></div><div className="so-sn"><span>تکمیل شده</span><strong>{stats.completed.toLocaleString("fa-IR")}</strong><small>سفارش</small></div></div>
+<div className="so-sc so-scs"><div className="so-si"><FiTruck/></div><div className="so-sn"><span>در حال ارسال</span><strong>{stats.shipping.toLocaleString("fa-IR")}</strong><small>سفارش</small></div></div>
+<div className="so-sc so-scp"><div className="so-si"><FiClock/></div><div className="so-sn"><span>در انتظار</span><strong>{stats.pending.toLocaleString("fa-IR")}</strong><small>سفارش</small></div></div>
 </div>
 
-<div className="shamin-orders__workspace">
-<aside className={`shamin-orders__filters ${shaminMobileFilters?"shamin-orders__filters--mobile-open":""}`}>
-<div className="shamin-orders__filters-head">
+<div className="so-ws">
+<aside className={`so-fl ${mf?"so-flm":""}`}>
+<div className="so-flh">
 <div><span>جستجو و فیلتر</span><h2>فیلترها</h2></div>
-<FiFilter/>
+<button type="button" className="so-flc" onClick={()=>setMf(false)} aria-label="بستن فیلترها"><FiX/></button>
 </div>
 
-<div className="shamin-orders__filter-group">
+<div className="so-fg">
 <label>وضعیت سفارش</label>
-<div className="shamin-orders__status-options">
+<div className="so-os">
 {[
-{value:"all",label:"همه",count:shaminStats.total},
-{value:"completed",label:"تکمیل شده",count:shaminStats.completed},
-{value:"shipping",label:"در حال ارسال",count:shaminStats.shipping},
-{value:"pending",label:"در انتظار",count:shaminStats.pending},
-{value:"cancelled",label:"لغو شده",count:shaminStats.cancelled}
-].map(item=>(
-<button key={item.value} type="button" className={`shamin-orders__status-option ${shaminStatusFilter===item.value?"shamin-orders__status-option--active":""}`} onClick={()=>shaminChangeFilter(setShaminStatusFilter,item.value)}>
-<span className="shamin-orders__checkbox">{shaminStatusFilter===item.value&&<FiCheckCircle/>}</span>
-<span>{item.label}</span>
-<small>{item.count.toLocaleString("fa-IR")}</small>
+{value:"all",label:"همه",count:stats.total},
+{value:"completed",label:"تکمیل شده",count:stats.completed},
+{value:"shipping",label:"در حال ارسال",count:stats.shipping},
+{value:"pending",label:"در انتظار",count:stats.pending},
+{value:"cancelled",label:"لغو شده",count:stats.cancelled}
+].map(i=>(
+<button key={i.value} type="button" className={`so-op ${fst===i.value?"so-opa":""}`} onClick={()=>chf(setFst,i.value)}>
+<span className="so-cb">{fst===i.value&&<FiCheck/>}</span>
+<span>{i.label}</span>
+<small>{i.count.toLocaleString("fa-IR")}</small>
 </button>
 ))}
 </div>
 </div>
 
-<div className="shamin-orders__filter-divider"/>
+<div className="so-fd"/>
 
-<div className="shamin-orders__filter-group">
+<div className="so-fg">
 <label><FiCalendar/>بازه زمانی</label>
-<button type="button" className="shamin-orders__select">
-<span>{shaminDateFilter==="today"?"امروز":shaminDateFilter==="yesterday"?"دیروز":"همه زمان‌ها"}</span>
-<FiChevronDown/>
-</button>
-<div className="shamin-orders__quick-dates">
-<button type="button" className={shaminDateFilter==="today"?"shamin-orders__quick-date--active":""} onClick={()=>shaminChangeFilter(setShaminDateFilter,shaminDateFilter==="today"?"all":"today")}>امروز</button>
-<button type="button" className={shaminDateFilter==="yesterday"?"shamin-orders__quick-date--active":""} onClick={()=>shaminChangeFilter(setShaminDateFilter,shaminDateFilter==="yesterday"?"all":"yesterday")}>دیروز</button>
+<div className="so-qd">
+<button type="button" className={fdt==="today"?"so-qda":""} onClick={()=>chf(setFdt,fdt==="today"?"all":"today")}>امروز</button>
+<button type="button" className={fdt==="yesterday"?"so-qda":""} onClick={()=>chf(setFdt,fdt==="yesterday"?"all":"yesterday")}>دیروز</button>
 </div>
 </div>
 
-<div className="shamin-orders__filter-divider"/>
+<div className="so-fd"/>
 
-<div className="shamin-orders__filter-group">
+<div className="so-fg">
 <label><FiUsers/>نوع مشتری</label>
-<button type="button" className="shamin-orders__select" onClick={()=>shaminChangeFilter(setShaminCustomerFilter,shaminCustomerFilter==="all"?"vip":shaminCustomerFilter==="vip"?"normal":"all")}>
-<span>{shaminCustomerFilter==="vip"?"مشتری ویژه":shaminCustomerFilter==="normal"?"مشتری عادی":"همه مشتریان"}</span>
-<FiChevronDown/>
-</button>
-<div className="shamin-orders__customer-switches">
-<button type="button" className={shaminCustomerFilter==="vip"?"shamin-orders__customer-switch--active":""} onClick={()=>shaminChangeFilter(setShaminCustomerFilter,shaminCustomerFilter==="vip"?"all":"vip")}>ویژه</button>
-<button type="button" className={shaminCustomerFilter==="normal"?"shamin-orders__customer-switch--active":""} onClick={()=>shaminChangeFilter(setShaminCustomerFilter,shaminCustomerFilter==="normal"?"all":"normal")}>عادی</button>
+<div className="so-cs">
+<button type="button" className={fcu==="vip"?"so-csa":""} onClick={()=>chf(setFcu,fcu==="vip"?"all":"vip")}>ویژه</button>
+<button type="button" className={fcu==="normal"?"so-csa":""} onClick={()=>chf(setFcu,fcu==="normal"?"all":"normal")}>عادی</button>
 </div>
 </div>
 
-<div className="shamin-orders__filter-divider"/>
+<div className="so-fd"/>
 
-<div className="shamin-orders__filter-group">
+<div className="so-fg">
+<label><FiCreditCard/>روش پرداخت</label>
+<div className="so-cs">
+<button type="button" className={fpy==="online"?"so-csa":""} onClick={()=>chf(setFpy,fpy==="online"?"all":"online")}>آنلاین</button>
+<button type="button" className={fpy==="cod"?"so-csa":""} onClick={()=>chf(setFpy,fpy==="cod"?"all":"cod")}>در محل</button>
+</div>
+</div>
+
+<div className="so-fd"/>
+
+<div className="so-fg">
 <label><FiDatabase/>مبلغ سفارش</label>
-<div className="shamin-orders__price-fields">
-<div>
-<span>از</span>
-<input type="text" value={shaminPriceMin} onChange={event=>{setShaminPriceMin(event.target.value.replace(/[^\d]/g,""));setShaminPage(1);}} placeholder="۰" inputMode="numeric"/>
-<small>تومان</small>
-</div>
-<div>
-<span>تا</span>
-<input type="text" value={shaminPriceMax} onChange={event=>{setShaminPriceMax(event.target.value.replace(/[^\d]/g,""));setShaminPage(1);}} placeholder="∞" inputMode="numeric"/>
-<small>تومان</small>
-</div>
+<div className="so-pf">
+<div><span>از</span><input type="text" value={pmin?Number(pmin).toLocaleString("fa-IR"):""} onChange={e=>{setPmin(nd(e.target.value));setPg(1);}} placeholder="۰" inputMode="numeric"/><small>تومان</small></div>
+<div><span>تا</span><input type="text" value={pmax?Number(pmax).toLocaleString("fa-IR"):""} onChange={e=>{setPmax(nd(e.target.value));setPg(1);}} placeholder="∞" inputMode="numeric"/><small>تومان</small></div>
 </div>
 </div>
 
-<button type="button" className="shamin-orders__apply-filter" onClick={()=>setShaminMobileFilters(false)}><FiFilter/>اعمال فیلتر</button>
-<button type="button" className="shamin-orders__reset-filter" onClick={shaminResetFilters}><FiRefreshCw/>بازنشانی فیلترها</button>
+<button type="button" className="so-af" onClick={()=>setMf(false)}><FiFilter/>اعمال فیلتر</button>
+<button type="button" className="so-rf" onClick={rst}><FiRefreshCw/>بازنشانی فیلترها</button>
 </aside>
 
-<div className="shamin-orders__orders-panel">
-<div className="shamin-orders__mobile-toolbar">
-<button type="button" onClick={()=>setShaminMobileFilters(previous=>!previous)}><FiFilter/>فیلترها</button>
+{mf&&(<div className="so-flo" onClick={()=>setMf(false)}/>)}
+
+<div className="so-pn">
+<div className="so-mtb">
+<button type="button" onClick={()=>setMf(p=>!p)}><FiFilter/>فیلترها</button>
+<span>{flt.length.toLocaleString("fa-IR")} سفارش</span>
 </div>
 
-<div className="shamin-orders__table-head">
-<div className="shamin-orders__results-count">
-<span>سفارش‌ها</span>
-<strong>نمایش {shaminFilteredOrders.length.toLocaleString("fa-IR")} مورد</strong>
+<div className="so-th">
+<div className="so-rc">
+<span>لیست سفارش‌ها</span>
+<strong>نمایش {flt.length.toLocaleString("fa-IR")} مورد</strong>
 </div>
-<div className="shamin-orders__table-tools">
-<div className="shamin-orders__sort">
-<span>مرتب‌سازی:</span>
-<select value={shaminSort} onChange={event=>shaminChangeFilter(setShaminSort,event.target.value)}>
+<div className="so-tt">
+<div className="so-sr">
+<span>مرتب‌سازی</span>
+<select value={srt} onChange={e=>chf(setSrt,e.target.value)}>
 <option value="newest">جدیدترین</option>
 <option value="oldest">قدیمی‌ترین</option>
 <option value="amount-high">بیشترین مبلغ</option>
@@ -220,65 +291,74 @@ return(
 </div>
 </div>
 
-<div className="shamin-orders__search">
+<div className="so-se">
 <FiSearch/>
-<input type="text" value={shaminSearch} onChange={event=>{setShaminSearch(event.target.value);setShaminPage(1);}} placeholder="جستجو بر اساس شماره سفارش، مشتری یا محصول..."/>
-{shaminSearch&&(<button type="button" onClick={()=>setShaminSearch("")} aria-label="پاک کردن جستجو"><FiXCircle/></button>)}
+<input type="text" value={q} onChange={e=>{setQ(e.target.value);setPg(1);}} placeholder="جستجو بر اساس شماره سفارش، مشتری، شماره تماس یا محصول..."/>
+{q&&(<button type="button" onClick={()=>{setQ("");setPg(1);}} aria-label="پاک کردن جستجو"><FiX/></button>)}
 </div>
 
-<div className="shamin-orders__table-wrapper">
-<div className="shamin-orders__table">
-<div className="shamin-orders__table-header">
+<div className="so-tw">
+<div className="so-tb">
+<div className="so-tbh">
 <span>شماره سفارش</span><span>مشتری</span><span>محصولات</span><span>مبلغ کل</span><span>وضعیت</span><span>زمان</span><span>عملیات</span>
 </div>
 
-{shaminCurrentOrders.length>0?(
-shaminCurrentOrders.map(order=>{
-const StatusIcon=shaminStatusConfig[order.status].icon;
+{cur.length>0?(
+cur.map(o=>{
+const I=SC[o.status].icon;
 return(
-<div className="shamin-orders__table-row" key={order.id}>
-<div className="shamin-orders__order-number">
-<button type="button" title="کپی شماره سفارش" onClick={()=>shaminCopyOrder(order.id)}>
-<span>#{order.id}</span>
-{shaminCopiedOrder===order.id?<FiCheckCircle/>:<FiCopy/>}
+<div className="so-tr" key={o.id}>
+<div className="so-on">
+<button type="button" title="کپی شماره سفارش" onClick={()=>cop(o.id)}>
+<span>#{o.id}</span>
+{cp===o.id?<FiCheck/>:<FiCopy/>}
 </button>
 </div>
-<div className="shamin-orders__customer">
-<div className="shamin-orders__customer-avatar"><FiUsers/></div>
-<div><strong>{order.customer}</strong><span>{order.customerType}</span></div>
+<div className="so-cu">
+<div className="so-ca">{gi(o.customer)}</div>
+<div><strong>{o.customer}</strong><span>{o.customerType}</span></div>
 </div>
-<div className="shamin-orders__products">
-<div className="shamin-orders__product-images">
-{order.products.slice(0,3).map((product,index)=>(
-<div className="shamin-orders__product-thumb" key={`${order.id}-${product.name}`}>
-<img src={shaminProductImages[index%shaminProductImages.length]} alt=""/>
+<div className="so-pd">
+<div className="so-pim">
+{o.products.slice(0,3).map((p,i)=>(
+<div className="so-pth" key={`${o.id}-${p.name}`}>
+<img src={IMG[i%IMG.length]} alt=""/>
 </div>
 ))}
-{order.productCount>3&&(<span className="shamin-orders__more-products">+{(order.productCount-3).toLocaleString("fa-IR")}</span>)}
+{o.productCount>3&&(<span className="so-mp">+{(o.productCount-3).toLocaleString("fa-IR")}</span>)}
 </div>
-<div className="shamin-orders__product-summary">
-<strong>{order.products[0]?.name}</strong>
-<span>{order.productCount.toLocaleString("fa-IR")} کالا</span>
+<div className="so-ps">
+<strong>{o.products[0]?.name}</strong>
+{o.productCount>1?(
+<span>
+{o.productCount.toLocaleString("fa-IR")} کالا
+<em>+{(o.productCount-1).toLocaleString("fa-IR")} محصول دیگر</em>
+</span>
+):(
+<span>۱ کالا</span>
+)}
 </div>
 </div>
-<div className="shamin-orders__amount">
-<strong>{shaminFormatPrice(order.amount)}</strong>
+<div className="so-am">
+<strong>{fp(o.amount)}</strong>
 <span>تومان</span>
 </div>
-<div className={`shamin-orders__status shamin-orders__status--${order.status}`}>
-<StatusIcon/>
-<span>{order.statusLabel}</span>
+<div className={`so-stt so-st-${o.status}`}>
+<I/>
+<span>{o.statusLabel}</span>
 </div>
-<div className="shamin-orders__time"><FiClock/><span>{order.time}</span></div>
-<div className="shamin-orders__actions">
-<button type="button" className="shamin-orders__view-button"><FiEye/><span>مشاهده</span></button>
-<div className="shamin-orders__more">
-<button type="button" className={shaminOpenOrderMenu===order.id?"shamin-orders__more-button--active":""} onClick={()=>setShaminOpenOrderMenu(shaminOpenOrderMenu===order.id?null:order.id)} aria-label="عملیات سفارش"><FiMoreHorizontal/></button>
-{shaminOpenOrderMenu===order.id&&(
-<div className="shamin-orders__more-menu">
-<button type="button"><FiEye/>مشاهده جزئیات</button>
-<button type="button"><FiPackage/>پیگیری سفارش</button>
-<button type="button"><FiCopy/>کپی شماره سفارش</button>
+<div className="so-tm"><FiClock/><span>{o.time}</span></div>
+<div className="so-ac">
+<button type="button" className="so-vb" onClick={()=>opd(o)}>
+<FiEye/><span>مشاهده</span>
+</button>
+<div className="so-mr">
+<button type="button" className={om===o.id?"so-mra":""} onClick={()=>setOm(om===o.id?null:o.id)} aria-label="عملیات سفارش"><FiMoreHorizontal/></button>
+{om===o.id&&(
+<div className="so-mm">
+<button type="button" onClick={()=>opd(o)}><FiEye/>مشاهده جزئیات</button>
+<button type="button" onClick={()=>oed(o)}><FiEdit3/>ویرایش سفارش</button>
+<button type="button" onClick={()=>cop(o.id)}><FiCopy/>کپی شماره سفارش</button>
 </div>
 )}
 </div>
@@ -287,30 +367,30 @@ return(
 );
 })
 ):(
-<div className="shamin-orders__empty">
-<div className="shamin-orders__empty-icon"><FiShoppingBag/></div>
+<div className="so-em">
+<div className="so-ei"><FiShoppingBag/></div>
 <strong>سفارشی پیدا نشد</strong>
 <span>با تغییر فیلترها یا عبارت جستجو دوباره تلاش کنید.</span>
-<button type="button" onClick={shaminResetFilters}><FiRefreshCw/>حذف فیلترها</button>
+<button type="button" onClick={rst}><FiRefreshCw/>حذف فیلترها</button>
 </div>
 )}
 </div>
 </div>
 
-<div className="shamin-orders__table-footer">
-<div className="shamin-orders__pagination-info">
-نمایش <strong>{shaminFilteredOrders.length===0?"۰":((shaminPage-1)*shaminRowsPerPage+1).toLocaleString("fa-IR")}</strong> تا <strong>{Math.min(shaminPage*shaminRowsPerPage,shaminFilteredOrders.length).toLocaleString("fa-IR")}</strong> از <strong>{shaminFilteredOrders.length.toLocaleString("fa-IR")}</strong> سفارش
+<div className="so-tf">
+<div className="so-pgi">
+نمایش <strong>{flt.length===0?"۰":((pg-1)*rpp+1).toLocaleString("fa-IR")}</strong> تا <strong>{Math.min(pg*rpp,flt.length).toLocaleString("fa-IR")}</strong> از <strong>{flt.length.toLocaleString("fa-IR")}</strong> سفارش
 </div>
-<div className="shamin-orders__pagination">
-<button type="button" disabled={shaminPage===1} onClick={()=>shaminGoToPage(shaminPage-1)} aria-label="صفحه قبل"><FiChevronRight/></button>
-{shaminVisiblePages.map(page=>(
-<button type="button" key={page} className={shaminPage===page?"shamin-orders__pagination-page--active":""} onClick={()=>shaminGoToPage(page)}>{page.toLocaleString("fa-IR")}</button>
+<div className="so-pg">
+<button type="button" disabled={pg===1} onClick={()=>gtp(pg-1)} aria-label="صفحه قبل"><FiChevronRight/></button>
+{vp.map(p=>(
+<button type="button" key={p} className={pg===p?"so-pga":""} onClick={()=>gtp(p)}>{p.toLocaleString("fa-IR")}</button>
 ))}
-<button type="button" disabled={shaminPage===shaminTotalPages} onClick={()=>shaminGoToPage(shaminPage+1)} aria-label="صفحه بعد"><FiChevronLeft/></button>
+<button type="button" disabled={pg===tp} onClick={()=>gtp(pg+1)} aria-label="صفحه بعد"><FiChevronLeft/></button>
 </div>
-<label className="shamin-orders__rows-count">
+<label className="so-nc">
 <span>نمایش</span>
-<select value={shaminRowsPerPage} onChange={event=>{setShaminRowsPerPage(Number(event.target.value));setShaminPage(1);}}>
+<select value={rpp} onChange={e=>{setRpp(Number(e.target.value));setPg(1);}}>
 <option value="6">۶</option>
 <option value="8">۸</option>
 <option value="10">۱۰</option>
@@ -321,6 +401,197 @@ return(
 </div>
 </div>
 </div>
+
+{dop&&sel&&(
+<>
+<div className="so-dov" onClick={cld}/>
+<aside className="so-dw">
+<div className="so-dh">
+<div><span>جزئیات سفارش</span><strong>#{sel.id}</strong></div>
+<button type="button" onClick={cld} aria-label="بستن جزئیات"><FiX/></button>
+</div>
+
+<div className="so-db">
+<div className="so-ds">
+{(()=>{const I=SC[sel.status].icon;return(<div className={`so-dsi so-dsi-${sel.status}`}><I/></div>);})()}
+<div><span>وضعیت سفارش</span><strong>{sel.statusLabel}</strong></div>
+<div className="so-dsc">
+<label htmlFor="so-sts">تغییر وضعیت</label>
+<select id="so-sts" value={sel.status} onChange={e=>hsc(e.target.value)}>
+<option value="pending">در انتظار</option>
+<option value="shipping">در حال ارسال</option>
+<option value="completed">تکمیل شده</option>
+<option value="cancelled">لغو شده</option>
+</select>
+<FiChevronDown/>
+</div>
+</div>
+
+<div className="so-dsec">
+<div className="so-dst"><span>اطلاعات مشتری</span></div>
+<div className="so-dcu">
+<div className="so-dav">{gi(sel.customer)}</div>
+<div><strong>{sel.customer}</strong><span>{sel.customerType}</span></div>
+</div>
+<div className="so-dil">
+<div><FiPhone/><span>شماره تماس</span><strong>{sel.phone}</strong></div>
+<div><FiMapPin/><span>آدرس</span><strong>{sel.address}</strong></div>
+<div><FiCreditCard/><span>روش پرداخت</span><strong>{sel.payment}</strong></div>
+</div>
+</div>
+
+<div className="so-dsec">
+<div className="so-dst">
+<span>محصولات سفارش</span>
+<small>{sel.productCount.toLocaleString("fa-IR")} کالا</small>
+</div>
+<div className="so-dps">
+{sel.products.map((p,i)=>(
+<div className="so-dp" key={`${sel.id}-${p.name}-${i}`}>
+<div className="so-dpi">
+<img src={IMG[i%IMG.length]} alt={p.name}/>
+<span><FiPackage/></span>
+</div>
+<div><strong>{p.name}</strong><span>{p.type} × {p.quantity.toLocaleString("fa-IR")}</span></div>
+<div className="so-dpp">
+<strong>{fp(p.price)}</strong>
+<span>تومان</span>
+</div>
+</div>
+))}
+</div>
+</div>
+
+<div className="so-dsm">
+<div><span>مبلغ سفارش</span><strong>{fp(sel.amount)} تومان</strong></div>
+<div><span><FiClock/>زمان ثبت</span><strong>{sel.time}</strong></div>
+</div>
+
+<div className="so-dsec so-dts">
+<div className="so-dst"><span>روند سفارش</span></div>
+<div className="so-dtl">
+<div className={`so-ti ${step>=1?"so-tid":""}`}>
+<span className="so-tld">{step>=1?<FiCheck/>:<FiClock/>}</span>
+<div><strong>ثبت سفارش</strong><small>{sel.time}</small></div>
+</div>
+<div className={`so-ti ${step>=2?"so-tid":""}`}>
+<span className="so-tld">{step>=2?<FiCheck/>:<FiClock/>}</span>
+<div><strong>پرداخت و تأیید سفارش</strong><small>{step>=2?"تأیید شده":"در انتظار پرداخت"}</small></div>
+</div>
+<div className={`so-ti ${step>=3?"so-tid":""}`}>
+<span className="so-tld">{step>=3?<FiCheck/>:<FiPackage/>}</span>
+<div><strong>آماده‌سازی سفارش</strong><small>{step>=3?"آماده شده":"در انتظار"}</small></div>
+</div>
+<div className={`so-ti ${step>=4?"so-tid":""}`}>
+<span className="so-tld">{step>=4?<FiCheck/>:<FiTruck/>}</span>
+<div><strong>ارسال سفارش</strong><small>{step>=4?"تحویل شده":step>=3?"در حال ارسال":"در انتظار"}</small></div>
+</div>
+</div>
+</div>
+</div>
+
+<div className="so-df">
+<button type="button" onClick={()=>cop(sel.id)}>
+{cp===sel.id?<FiCheck/>:<FiCopy/>}کپی شماره
+</button>
+<button type="button" className="so-deb" onClick={()=>oed(sel)}>
+<FiEdit3/>ویرایش سفارش
+</button>
+<button type="button" onClick={cld}>بستن</button>
+</div>
+</aside>
+</>
+)}
+
+{ed&&sel&&(
+<>
+<div className="so-eov" onClick={()=>setEd(false)}/>
+<div className="so-edm">
+<div className="so-edh">
+<div><span>ویرایش سفارش</span><strong>#{sel.id}</strong></div>
+<button type="button" onClick={()=>setEd(false)} aria-label="بستن ویرایش"><FiX/></button>
+</div>
+
+<div className="so-edb">
+<div className="so-edsec">
+<div className="so-edtitle">اطلاعات مشتری</div>
+<div className="so-edgrid">
+<label><span>نام مشتری</span><div><FiUser/><input value={ec} onChange={e=>setEc(e.target.value)} placeholder="نام مشتری"/></div></label>
+<label><span>شماره تماس</span><div><FiPhone/><input value={ep} onChange={e=>setEp(e.target.value)} placeholder="شماره تماس"/></div></label>
+<label><span>نوع مشتری</span><div><FiUsers/><select value={ect} onChange={e=>setEct(e.target.value)}><option>مشتری عادی</option><option>مشتری ویژه</option></select><FiChevronDown/></div></label>
+<label><span>روش پرداخت</span><div><FiCreditCard/><select value={epy} onChange={e=>setEpy(e.target.value)}><option>پرداخت آنلاین</option><option>پرداخت در محل</option><option>در انتظار پرداخت</option></select><FiChevronDown/></div></label>
+<label className="so-edfull"><span>آدرس</span><div><FiMapPin/><input value={ea} onChange={e=>setEa(e.target.value)} placeholder="آدرس مشتری"/></div></label>
+<label><span>وضعیت سفارش</span><div><FiClock/><select value={es} onChange={e=>setEs(e.target.value)}><option value="pending">در انتظار</option><option value="shipping">در حال ارسال</option><option value="completed">تکمیل شده</option><option value="cancelled">لغو شده</option></select><FiChevronDown/></div></label>
+</div>
+</div>
+
+<div className="so-edsec">
+<div className="so-edtitle-row">
+<div className="so-edtitle">محصولات سفارش<small>{epr.length.toLocaleString("fa-IR")} محصول</small></div>
+<button type="button" className="so-eadd" onClick={aep}><FiPlus/>افزودن محصول</button>
+</div>
+<div className="so-eproducts">
+{epr.map((p,i)=>(
+<div className="so-eproduct" key={i}>
+<div className="so-eproduct-index">{(i+1).toLocaleString("fa-IR")}</div>
+<div className="so-eproduct-main">
+<label><span>نام محصول</span><input value={p.name} onChange={e=>uep(i,"name",e.target.value)} placeholder="نام محصول"/></label>
+<label><span>نوع</span><input value={p.type} onChange={e=>uep(i,"type",e.target.value)} placeholder="عطر مردانه"/></label>
+<label><span>تعداد</span><input type="number" min="1" value={p.quantity} onChange={e=>uep(i,"quantity",e.target.value)}/></label>
+<label><span>قیمت واحد</span><input inputMode="numeric" value={p.price?Number(p.price).toLocaleString("fa-IR"):""} onChange={e=>uep(i,"price",e.target.value)} placeholder="۰"/></label>
+</div>
+<button type="button" className="so-epdel" onClick={()=>dep(i)} aria-label="حذف محصول"><FiX/></button>
+</div>
+))}
+{!epr.length&&(
+<div className="so-eempty">
+محصولی در سفارش وجود ندارد.
+<button type="button" onClick={aep}><FiPlus/>افزودن محصول</button>
+</div>
+)}
+</div>
+</div>
+
+<div className="so-edtotal">
+<span>مبلغ نهایی سفارش</span>
+<strong>{epr.reduce((s,p)=>s+(Number(p.price)||0)*(Number(p.quantity)||0),0).toLocaleString("fa-IR")}<small>تومان</small></strong>
+</div>
+</div>
+
+<div className="so-edf">
+<button type="button" onClick={()=>setEd(false)}>انصراف</button>
+<button type="button" className="so-edsave" onClick={sed}><FiCheck/>ذخیره تغییرات</button>
+</div>
+</div>
+</>
+)}
+
+{nop&&(
+<>
+<div className="so-mov" onClick={()=>setNop(false)}/>
+<div className="so-md">
+<div className="so-mh">
+<div><span>مدیریت سفارش</span><strong>ایجاد سفارش جدید</strong></div>
+<button type="button" onClick={()=>setNop(false)} aria-label="بستن"><FiX/></button>
+</div>
+<form className="so-nf" onSubmit={hno}>
+<label>نام مشتری<div><FiUser/><input type="text" value={nc} onChange={e=>setNc(e.target.value)} placeholder="مثلاً سارا محمدی"/></div></label>
+<label>شماره تماس<div><FiPhone/><input type="tel" value={np} onChange={e=>setNp(e.target.value)} placeholder="۰۹۱۲..." dir="rtl"/></div></label>
+<label>نوع مشتری<div><FiUsers/><select value={nct} onChange={e=>setNct(e.target.value)}><option>مشتری عادی</option><option>مشتری ویژه</option></select><FiChevronDown/></div></label>
+<label>روش پرداخت<div><FiCreditCard/><select value={npy} onChange={e=>setNpy(e.target.value)}><option>پرداخت آنلاین</option><option>پرداخت در محل</option><option>در انتظار پرداخت</option></select><FiChevronDown/></div></label>
+<label>محصول<div><FiPackage/><input type="text" value={npr} onChange={e=>setNpr(e.target.value)} placeholder="نام محصول"/></div></label>
+<label>تعداد<div><FiPackage/><input type="number" min="1" value={nq} onChange={e=>setNq(e.target.value)} placeholder="۱"/></div></label>
+<label className="so-nfull">آدرس<div><FiMapPin/><input type="text" value={nad} onChange={e=>setNad(e.target.value)} placeholder="آدرس مشتری"/></div></label>
+<label>قیمت واحد<div><FiDatabase/><input type="text" inputMode="numeric" value={na?Number(na).toLocaleString("fa-IR"):""} onChange={e=>setNa(nd(e.target.value))} placeholder="مثلاً ۳۵۰۰۰۰۰"/><small>تومان</small></div></label>
+<div className="so-mn"><FiHash/><span>مبلغ کل به‌صورت خودکار از ضرب قیمت واحد در تعداد محاسبه می‌شود.</span></div>
+<div className="so-ma">
+<button type="button" onClick={()=>setNop(false)}>انصراف</button>
+<button type="submit"><FiPlus/>ثبت سفارش</button>
+</div>
+</form>
+</div>
+</>
+)}
 </section>
 );
 }
