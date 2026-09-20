@@ -17,7 +17,7 @@ import {
   FiMapPin,
   FiX,
 } from "react-icons/fi";
-import { FaStar, FaInstagram, FaTelegramPlane, FaWhatsapp, FaPinterestP } from "react-icons/fa";
+import { FaStar, FaInstagram, FaTelegramPlane, FaWhatsapp } from "react-icons/fa";
 import "./Home.css";
 
 /* =========================================================
@@ -89,7 +89,57 @@ const CATEGORIES = [
   },
 ];
 
-const BRANDS = ["Dior", "CHANEL", "TOM FORD", "GUCCI", "YSL", "LANCÔME", "ESTÉE LAUDER", "CLINIQUE"];
+const BRANDS = [
+  "Dior",
+  "CHANEL",
+  "TOM FORD",
+  "GUCCI",
+  "YSL",
+  "LANCÔME",
+  "ESTÉE LAUDER",
+  "CLINIQUE",
+  "Giorgio Armani",
+  "Versace",
+  "Burberry",
+  "Guerlain",
+  "Hermès",
+  "MAC",
+  "NYX",
+  "Maybelline",
+  "L'Oréal Paris",
+  "essence",
+  "Michael Kors",
+  "Rolex",
+  "Fossil",
+  "Ray-Ban",
+  "Cartier",
+  "Swatch",
+  "Prada",
+  "Dolce & Gabbana",
+  "Calvin Klein",
+  "Bvlgari",
+  "Chopard",
+  "Montblanc",
+  "Oakley",
+  "Tissot",
+  "Calvin Klein" ,
+  "Hugo Boss" ,
+  "Narciso Rodriguez" ,
+  "Maison Francis Kurkdjian" ,
+  "Creed" ,
+  "Amouage" ,
+  "Byredo" ,
+  "Jo Malone London" ,
+  "Lattafa" ,
+  "Rasasi" ,
+  "Swiss Arabian" ,
+  "Mancera" ,
+  "Amouage" ,
+  "Attar Collection" ,
+  "Tiziana Terenzi" ,
+  "MAC" ,
+  "Maybelline" ,
+];
 
 const PRODUCTS = [
   {
@@ -141,7 +191,7 @@ const PRODUCTS = [
     name: "پالت سایه چشم NYX",
     brand: "NYX",
     price: 1890000,
-    oldPrice: 2495000,
+    oldPrice: null,
     rating: 4,
     badge: "٪۳۰",
     image:
@@ -181,7 +231,7 @@ const PRODUCTS = [
       "/arayeshi2.png",
   },
   {
-    id: 8,
+    id: 9,
     name: "اتو مو",
     brand: "shiglam",
     price: 3990000,
@@ -223,9 +273,13 @@ const BLOG_POSTS = [
   },
 ];
 
-const FOOTER_QUICK_LINKS = ["صفحه اصلی", "عطر و ادکلن", "لوازم آرایشی و بهداشتی", "اکسسوری"];
-const FOOTER_SERVICE_LINKS = ["پشتیبانی", "تماس با ما", "سوالات متداول", "شرایط و قوانین"];
 
+
+
+const FOOTER_SERVICE_LINKS = [
+  { id: "contact", label: "درباره ما", href: "/about-us" },
+  { id: "faq", label: "سوالات متداول", href: "/faq" },
+];
 /* =========================================================
    HELPERS
    ========================================================= */
@@ -273,8 +327,8 @@ const Header = () => {
           </nav>
         </div>
 
-        <a href="#" className="header__logo" aria-label="فروشگاه شمین">
-          <span className="header__logo-mark"></span>
+        <a href="/about-us" className="header__logo" aria-label="فروشگاه شمین">
+          <img src="/logo.png" alt="لوگوی شمین گالری" className="header__logo-img" />
           <span className="header__logo-text">
             گالری شمین
           </span>
@@ -285,16 +339,16 @@ const Header = () => {
             <FiSearch className="header__search-icon" />
             <input type="text" placeholder="جستجو در محصولات..." />
           </div>
-          <button className="header__icon-btn" aria-label="حساب کاربری">
+          <a href="/register" className="header__icon-btn" aria-label="ورود / ثبت نام">
             <FiUser />
-          </button>
+          </a>
           <button className="header__icon-btn" aria-label="علاقه‌مندی‌ها">
             <FiHeart />
           </button>
-          <button className="header__icon-btn" aria-label="سبد خرید">
+          <a href="/cart" className="header__icon-btn" aria-label="سبد خرید">
             <FiShoppingCart />
             <span className="header__badge">0</span>
-          </button>
+          </a>
         </div>
       </div>
 
@@ -303,7 +357,10 @@ const Header = () => {
           <div className="mobile-menu__backdrop" onClick={() => setMenuOpen(false)} />
           <div className="mobile-menu__panel">
             <div className="mobile-menu__head">
-              <span className="header__logo-text">گالری شمین</span>
+              <span className="mobile-menu__brand">
+                <img src="/logo.png" alt="لوگوی شمین گالری" className="header__logo-img" />
+                <span className="header__logo-text">گالری شمین</span>
+              </span>
               <button
                 className="header__icon-btn"
                 aria-label="بستن منو"
@@ -445,14 +502,19 @@ const CategorySection = () => (
    SECTION: BRANDS
    ========================================================= */
 
-const BrandsSection = () => {
-  const scrollerRef = useRef(null);
+const BrandChip = ({ brand }) => (
+  <div className="brand-card">
+    <span className="brand-card__mark">{brand.charAt(0)}</span>
+    <span className="brand-card__name">{brand}</span>
+  </div>
+);
 
-  const scroll = (dir) => {
-    if (scrollerRef.current) {
-      scrollerRef.current.scrollBy({ left: dir * 240, behavior: "smooth" });
-    }
-  };
+const BrandsSection = () => {
+  const half = Math.ceil(BRANDS.length / 2);
+  const rowTop = BRANDS.slice(0, half);
+  const rowBottom = BRANDS.slice(half);
+  const trackTop = [...rowTop, ...rowTop];
+  const trackBottom = [...rowBottom, ...rowBottom];
 
   return (
     <section className="container brands-section">
@@ -460,20 +522,22 @@ const BrandsSection = () => {
         <FiAward />
         <h2>برندهای معتبر</h2>
       </div>
-      <div className="brands-section__row">
-        <button className="brands-section__arrow" onClick={() => scroll(1)} aria-label="بعدی">
-          <FiChevronRight />
-        </button>
-        <div className="brands-section__scroller" ref={scrollerRef}>
-          {BRANDS.map((brand) => (
-            <div className="brand-card" key={brand}>
-              {brand}
-            </div>
-          ))}
+
+      <div className="brands-marquee">
+        <div className="brands-marquee__row">
+          <div className="brands-marquee__track">
+            {trackTop.map((brand, i) => (
+              <BrandChip brand={brand} key={`top-${brand}-${i}`} />
+            ))}
+          </div>
         </div>
-        <button className="brands-section__arrow" onClick={() => scroll(-1)} aria-label="قبلی">
-          <FiChevronLeft />
-        </button>
+        <div className="brands-marquee__row">
+          <div className="brands-marquee__track brands-marquee__track--reverse">
+            {trackBottom.map((brand, i) => (
+              <BrandChip brand={brand} key={`bottom-${brand}-${i}`} />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -483,38 +547,52 @@ const BrandsSection = () => {
    SECTION: PRODUCTS
    ========================================================= */
 
-const ProductCard = ({ product }) => (
-  <div className="product-card">
-    <div className="product-card__media">
-      {product.badge && (
-        <span
-          className={
-            product.badge === "جدید"
-              ? "product-card__badge product-card__badge--new"
-              : "product-card__badge product-card__badge--sale"
-          }
-        >
-          {product.badge}
-        </span>
-      )}
-      <button className="product-card__wishlist" aria-label="افزودن به علاقه‌مندی‌ها">
-        <FiHeart />
-      </button>
-      <img src={product.image} alt={product.name} />
-    </div>
-    <div className="product-card__body">
-      <span className="product-card__brand">{product.brand}</span>
-      <h3 className="product-card__name">{product.name}</h3>
-      <Stars rating={product.rating} />
-      <div className="product-card__price">
-        <span className="product-card__price-current">{formatPrice(product.price)}</span>
-        {product.oldPrice && (
-          <span className="product-card__price-old">{formatPrice(product.oldPrice)}</span>
-        )}
+const ProductCard = ({ product }) => {
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // TODO: connect to real cart logic
+    console.log("افزودن به سبد خرید:", product.name);
+  };
+
+  return (
+    <div className="product-card">
+      <a href={`/product/${product.id}`} className="product-card__link">
+        <div className="product-card__media">
+          {product.badge && (
+            <span
+              className={
+                product.badge === "جدید"
+                  ? "product-card__badge product-card__badge--new"
+                  : "product-card__badge product-card__badge--sale"
+              }
+            >
+              {product.badge}
+            </span>
+          )}
+          <img src={product.image} alt={product.name} />
+        </div>
+        <div className="product-card__body">
+          <span className="product-card__brand">{product.brand}</span>
+          <h3 className="product-card__name">{product.name}</h3>
+          <Stars rating={product.rating} />
+          <div className="product-card__price">
+            <span className="product-card__price-current">{formatPrice(product.price)}</span>
+            {product.oldPrice && (
+              <span className="product-card__price-old">{formatPrice(product.oldPrice)}</span>
+            )}
+          </div>
+        </div>
+      </a>
+      <div className="product-card__actions">
+        <button className="product-card__add-btn" onClick={handleAddToCart}>
+          <FiShoppingCart />
+          افزودن به سبد خرید
+        </button>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const BestSellingProducts = () => (
   <section className="container products-section" id="products">
@@ -599,8 +677,8 @@ const Footer = () => (
   <footer className="footer">
     <div className="container footer__grid">
       <div className="footer__col footer__col--brand">
-        <a href="#" className="header__logo header__logo--footer">
-          <span className="header__logo-mark">S</span>
+        <a href="/about-us" className="header__logo header__logo--footer">
+          <img src="/logo.png" alt="لوگوی شمین گالری" className="header__logo-img" />
           <span className="header__logo-text">
             SHAMIN
             <small>BEAUTY · STYLE · YOU</small>
@@ -611,48 +689,45 @@ const Footer = () => (
           <a href="#" aria-label="اینستاگرام">
             <FaInstagram />
           </a>
-          <a href="#" aria-label="تلگرام">
+          <a href="https://t.me/Shamin_Galerri" aria-label="تلگرام">
             <FaTelegramPlane />
           </a>
-          <a href="#" aria-label="واتس‌اپ">
-            <FaWhatsapp />
+          <a href="https://ble.ir/shamin_galerri" aria-label="بله">
+            <img src="/bale-icon.png" alt="بله" className="footer__social-icon" />
           </a>
-          <a href="#" aria-label="پینترست">
-            <FaPinterestP />
+          <a href="https://eitaa.com/Shamin_Galerri" aria-label="ایتا">
+            <img src="/eitaa-icon.png" alt="ایتا" className="footer__social-icon" />
+          </a>
+          <a href="https://splus.ir/Shamin_Galerri" aria-label="سروش">
+            <img src="/soroush-icon.png" alt="سروش" className="footer__social-icon" />
+          </a>
+          <a href="rubika.ir/@shamin_galeri" aria-label="روبیکا">
+            <img src="/rubika-icon.png" alt="روبیکا" className="footer__social-icon" />
           </a>
         </div>
       </div>
 
+      
+
       <div className="footer__col">
-        <h4>دسترسی به دسته بندی</h4>
+        <h4>اطلاعات بیشتر ...</h4>
         <ul>
-          {FOOTER_QUICK_LINKS.map((l) => (
-            <li key={l}>
-              <a href="#">{l}</a>
-            </li>
+          {FOOTER_SERVICE_LINKS.map((link) => (
+        <li key={link.id}>
+        <a href={link.href}>{link.label}</a>
+          </li>
           ))}
         </ul>
       </div>
 
       <div className="footer__col">
-        <h4>خدمات مشتریان</h4>
-        <ul>
-          {FOOTER_SERVICE_LINKS.map((l) => (
-            <li key={l}>
-              <a href="#">{l}</a>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="footer__col">
-        <h4>تماس با ما</h4>
+        <h4> ارتباط با ما</h4>
         <ul className="footer__contact">
           <li>
-            <FiPhone /> ۰۲۱-۱۲۳۴۵۶۷۸
+            <FiPhone /> 09185642392 / 09193046284
           </li>
           <li>
-            <FiMail /> info@shamin.ir
+            <FiMail /> shamingallery1401@gmail.com
           </li>
           <li>
             <FiMapPin /> تهران، افسریه
@@ -664,7 +739,10 @@ const Footer = () => (
     <div className="footer__bottom">
       <div className="container footer__bottom-inner">
         <span>© تمامی حقوق مادی و معنوی متعلق به فروشگاه شمین است.</span>
-        <span id="morena">طراحی شده توسط تیم برنامه نویسی <a href="https://morenacode.ir/">مورنا کد</a></span>
+        <a href="https://morenacode.ir/" id="morena" className="footer__morena">
+          طراحی شده توسط تیم برنامه نویسی مورنا کد
+          <img src="/logo-morena.png" alt="مورنا کد" className="footer__morena-logo" />
+        </a>
       </div>
     </div>
   </footer>
