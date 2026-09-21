@@ -35,7 +35,7 @@ const Login = () => {
                 <input
                   type="text"
                   name="identifier"
-                  placeholder="ایمیل یا شماره موبایل"
+                  placeholder="شماره موبایل"
                   value={form.identifier}
                   onChange={handleChange}
                   required
@@ -80,14 +80,14 @@ const Login = () => {
 
               <button type="submit" className="auth-btn auth-btn--primary">
                 <FiChevronLeft />
-                ورود
+                <a href="/verify">ورود</a> 
               </button>
 
               <div className="auth-divider">
                 <span>یا</span>
               </div>
 
-              <a href="#" className="auth-btn auth-btn--ghost">
+              <a href="./Register" className="auth-btn auth-btn--ghost">
                 <FiMail />
                 حساب کاربری ندارید؟ ثبت نام کنید
               </a>
