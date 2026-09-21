@@ -89,57 +89,7 @@ const CATEGORIES = [
   },
 ];
 
-const BRANDS = [
-  "Dior",
-  "CHANEL",
-  "TOM FORD",
-  "GUCCI",
-  "YSL",
-  "LANCÔME",
-  "ESTÉE LAUDER",
-  "CLINIQUE",
-  "Giorgio Armani",
-  "Versace",
-  "Burberry",
-  "Guerlain",
-  "Hermès",
-  "MAC",
-  "NYX",
-  "Maybelline",
-  "L'Oréal Paris",
-  "essence",
-  "Michael Kors",
-  "Rolex",
-  "Fossil",
-  "Ray-Ban",
-  "Cartier",
-  "Swatch",
-  "Prada",
-  "Dolce & Gabbana",
-  "Calvin Klein",
-  "Bvlgari",
-  "Chopard",
-  "Montblanc",
-  "Oakley",
-  "Tissot",
-  "Calvin Klein" ,
-  "Hugo Boss" ,
-  "Narciso Rodriguez" ,
-  "Maison Francis Kurkdjian" ,
-  "Creed" ,
-  "Amouage" ,
-  "Byredo" ,
-  "Jo Malone London" ,
-  "Lattafa" ,
-  "Rasasi" ,
-  "Swiss Arabian" ,
-  "Mancera" ,
-  "Amouage" ,
-  "Attar Collection" ,
-  "Tiziana Terenzi" ,
-  "MAC" ,
-  "Maybelline" ,
-];
+
 
 const PRODUCTS = [
   {
@@ -502,46 +452,9 @@ const CategorySection = () => (
    SECTION: BRANDS
    ========================================================= */
 
-const BrandChip = ({ brand }) => (
-  <div className="brand-card">
-    <span className="brand-card__mark">{brand.charAt(0)}</span>
-    <span className="brand-card__name">{brand}</span>
-  </div>
-);
 
-const BrandsSection = () => {
-  const half = Math.ceil(BRANDS.length / 2);
-  const rowTop = BRANDS.slice(0, half);
-  const rowBottom = BRANDS.slice(half);
-  const trackTop = [...rowTop, ...rowTop];
-  const trackBottom = [...rowBottom, ...rowBottom];
 
-  return (
-    <section className="container brands-section">
-      <div className="section-title">
-        <FiAward />
-        <h2>برندهای معتبر</h2>
-      </div>
 
-      <div className="brands-marquee">
-        <div className="brands-marquee__row">
-          <div className="brands-marquee__track">
-            {trackTop.map((brand, i) => (
-              <BrandChip brand={brand} key={`top-${brand}-${i}`} />
-            ))}
-          </div>
-        </div>
-        <div className="brands-marquee__row">
-          <div className="brands-marquee__track brands-marquee__track--reverse">
-            {trackBottom.map((brand, i) => (
-              <BrandChip brand={brand} key={`bottom-${brand}-${i}`} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
 
 /* =========================================================
    SECTION: PRODUCTS
@@ -760,7 +673,6 @@ const Home = () => {
         <Hero />
         <Features />
         <CategorySection />
-        <BrandsSection />
         <BestSellingProducts />
         <BlogSection />
         <Newsletter />

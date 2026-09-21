@@ -8,6 +8,7 @@ import Cart from "../pages/Cart";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Verify from "../pages/Verify";
+import Product from "../pages/Product";
 
 const AppRoutes = () => {
   return (
@@ -20,9 +21,7 @@ const AppRoutes = () => {
       <Route path="/Login" element={<Login />} />
       <Route path="/Register" element={<Register />} />
       <Route path="/Verify" element={<Verify />} />
-
-
-
+      <Route path="/Product" element={<Product />} />
     </Routes>
   );
 };
